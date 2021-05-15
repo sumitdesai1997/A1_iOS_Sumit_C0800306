@@ -15,6 +15,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     // creating an object of location manager
     var locationManager = CLLocationManager()
+    var userLocation = CLLocation()
     var city = ""
     var cityList = [String](repeating: "", count: 3)
     var countList = [Int](repeating: 0, count: 3)
@@ -43,7 +44,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         
         // long press gesture for adding the cities
         let lpGesture = UITapGestureRecognizer(target: self, action: #selector(addMarker))
-        lpGesture.numberOfTapsRequired = 1
+        lpGesture.numberOfTapsRequired = 2
         mapView.addGestureRecognizer(lpGesture)
     }
     
@@ -111,7 +112,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     //MARK: - method didUpdateLocations from the CLLocationManagerDelegate
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let userLocation = locations[0]
+        userLocation = locations[0]
         
        // let latitude = userLocation.coordinate.latitude
        // let longitude = userLocation.coordinate.longitude
@@ -160,6 +161,33 @@ extension ViewController: MKMapViewDelegate{
             return renderer
         }
         return MKOverlayRenderer()
+    }
+    
+    //MARK: - method for viewFor annotation
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation is MKUserLocation{
+            return nil
+        } else if (annotation.title != "Your location") {
+            let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "custom") ?? MKPinAnnotationView()
+            annotationView.image = UIImage(named: "ic_place_2x")
+            annotationView.canShowCallout = true
+            annotationView.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+            return annotationView
+        }
+        return nil
+    }
+    
+    //MARK: - method for callout accessory control tapped
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        
+        let coordinate0 = CLLocation(latitude: userLocation.coordinate.latitude, longitude: userLocation.coordinate.longitude)
+        let coordinate1 = CLLocation(latitude: view.annotation!.coordinate.latitude, longitude: view.annotation!.coordinate.longitude)
+        let distanceInKm = (coordinate1.distance(from: coordinate0))/1000
+        
+        let alertController = UIAlertController(title: "Distance", message: "Distance from your location is \(String(format:"%.2f",distanceInKm)) Km.", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
     }
     
 }
