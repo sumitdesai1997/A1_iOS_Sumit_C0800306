@@ -18,6 +18,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var city = ""
     var cityList = [String](repeating: "", count: 3)
     var countList = [Int](repeating: 0, count: 3)
+    var cityCoordinateList = [CLLocationCoordinate2D](repeating: CLLocationCoordinate2D(latitude: 0, longitude: 0), count:3)
     var drawPolygon = false
     
     override func viewDidLoad() {
@@ -29,6 +30,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         // assign the delegate of locationManager to this class
         locationManager.delegate = self
         
+        mapView.delegate = self
+        
         // assign the best accuracy of the location
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         
@@ -39,7 +42,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         locationManager.startUpdatingLocation()
         
         // long press gesture for adding the cities
-        let lpGesture = UILongPressGestureRecognizer(target: self, action: #selector(addMarker))
+        let lpGesture = UITapGestureRecognizer(target: self, action: #selector(addMarker))
+        lpGesture.numberOfTapsRequired = 1
         mapView.addGestureRecognizer(lpGesture)
     }
     
@@ -72,29 +76,38 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                         
                         // addiing title for the annotations
                         if(self.countList[0] == 0){
-                            annotation.title = "A"
                             self.countList[0] = 1
+                            annotation.title = "A"
+                            self.cityCoordinateList[0] = coordinate
                         } else if(self.countList[1] == 0){
-                            annotation.title = "B"
                             self.countList[1] = 1
+                            annotation.title = "B"
+                            self.cityCoordinateList[1] = coordinate
                         } else if(self.countList[2] == 0){
-                            annotation.title = "C"
                             self.countList[2] = 1
+                            annotation.title = "C"
+                            self.cityCoordinateList[2] = coordinate
                         }
                         
                         if(self.countList[0] != 0 && self.countList[1] != 0 && self.countList[2] != 0){
                             self.drawPolygon = true
+                        }
+                        
+                        if(self.drawPolygon){
+                            self.drawingPolygon()
                         }
         
                     }
                 }
             }
         }
-        
-
-       }
+    }
     
-    
+    //MARK: - method to draw polygon
+    func drawingPolygon(){
+        let polygon = MKPolygon(coordinates: cityCoordinateList, count: cityCoordinateList.count)
+        mapView.addOverlay(polygon)
+    }
     
     //MARK: - method didUpdateLocations from the CLLocationManagerDelegate
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -133,6 +146,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         	
     }
 
+}
 
+extension ViewController: MKMapViewDelegate{
+    
+    //MARK: - method to renderer for overlay
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        if overlay is MKPolygon{
+            let renderer = MKPolygonRenderer(overlay: overlay)
+            renderer.fillColor = UIColor.red.withAlphaComponent(0.5)
+            renderer.strokeColor = UIColor.green
+            renderer.lineWidth = 3
+            return renderer
+        }
+        return MKOverlayRenderer()
+    }
+    
 }
 
