@@ -15,7 +15,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     // creating an object of location manager
     var locationManager = CLLocationManager()
-
+    var city = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -33,7 +34,41 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         
         // updating the location of the user as per movement
         locationManager.startUpdatingLocation()
+        
+        // long press gesture for adding the cities
+        let lpGesture = UILongPressGestureRecognizer(target: self, action: #selector(addMarker))
+        mapView.addGestureRecognizer(lpGesture)
     }
+    
+    //MARK: - method for long press gesture
+    @objc func addMarker(gesture: UIGestureRecognizer) {
+        let touchPoint = gesture.location(in: mapView)
+        let coordinate = mapView.convert(touchPoint, toCoordinateFrom: mapView)
+        
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        
+        CLGeocoder().reverseGeocodeLocation(location) { (placemarks, error) in
+            if(error != nil){
+                print(error!)
+            } else{
+                if let placemark = placemarks?[0]{
+                    
+                    self.city = ""
+                    if placemark.administrativeArea != nil && placemark.administrativeArea == "ON" {
+                        self.city = placemark.subAdministrativeArea!
+                    }
+                }
+            }
+        }
+        
+        // add annotation for the coordinatet
+        let annotation = MKPointAnnotation()
+        annotation.title = "Cities"
+        annotation.coordinate = coordinate
+        mapView.addAnnotation(annotation)
+       }
+    
+    
     
     //MARK: - method didUpdateLocations from the CLLocationManagerDelegate
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
