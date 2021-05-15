@@ -16,6 +16,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     // creating an object of location manager
     var locationManager = CLLocationManager()
     var city = ""
+    var cityList = [String](repeating: "", count: 3)
+    var countList = [Int](repeating: 0, count: 3)
+    var drawPolygon = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,18 +57,41 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 if let placemark = placemarks?[0]{
                     
                     self.city = ""
+                    
+                    // adding markers only if the cities are from ontario
                     if placemark.administrativeArea != nil && placemark.administrativeArea == "ON" {
                         self.city = placemark.subAdministrativeArea!
+                        
+                        print(self.city)
+                        print(placemark.administrativeArea!)
+                        
+                        // adding annotation for the coordinates
+                        let annotation = MKPointAnnotation()
+                        annotation.coordinate = coordinate
+                        self.mapView.addAnnotation(annotation)
+                        
+                        // addiing title for the annotations
+                        if(self.countList[0] == 0){
+                            annotation.title = "A"
+                            self.countList[0] = 1
+                        } else if(self.countList[1] == 0){
+                            annotation.title = "B"
+                            self.countList[1] = 1
+                        } else if(self.countList[2] == 0){
+                            annotation.title = "C"
+                            self.countList[2] = 1
+                        }
+                        
+                        if(self.countList[0] != 0 && self.countList[1] != 0 && self.countList[2] != 0){
+                            self.drawPolygon = true
+                        }
+        
                     }
                 }
             }
         }
         
-        // add annotation for the coordinatet
-        let annotation = MKPointAnnotation()
-        annotation.title = "Cities"
-        annotation.coordinate = coordinate
-        mapView.addAnnotation(annotation)
+
        }
     
     
@@ -74,10 +100,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let userLocation = locations[0]
         
-        let latitude = userLocation.coordinate.latitude
-        let longitude = userLocation.coordinate.longitude
+       // let latitude = userLocation.coordinate.latitude
+       // let longitude = userLocation.coordinate.longitude
         
-        displayLocation(latitude: latitude, longitude: longitude, title: "Your location", subtitle: "sample")
+        displayLocation(latitude: 43.65, longitude: -79.38, title: "Your location", subtitle: "sample")
         
     }
     
