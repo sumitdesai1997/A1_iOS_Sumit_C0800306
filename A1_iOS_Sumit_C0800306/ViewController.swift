@@ -178,6 +178,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
        }
     }
     
+    //MARK: - method to draw polyline
+    func drawingPolyline(){
+        print("drawing the Polyline")
+        let polyline = MKPolyline(coordinates: cityCoordinateList, count: cityCoordinateList.count)
+        mapView.addOverlay(polyline)
+    }
+    
     
     //MARK: - method didUpdateLocations from the CLLocationManagerDelegate
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -228,6 +235,11 @@ extension ViewController: MKMapViewDelegate{
             renderer.strokeColor = UIColor.green
             renderer.lineWidth = 3
             return renderer
+        } else if overlay is MKPolyline {
+            let rendrer = MKPolylineRenderer(overlay: overlay)
+            rendrer.strokeColor = UIColor.blue
+            rendrer.lineWidth = 3
+            return rendrer
         }
         return MKOverlayRenderer()
     }
