@@ -145,6 +145,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
 
     //MARK: - method to draw the route between three markers
     @IBAction func clickDirection(_ sender: UIButton) {
+        
+        self.mapView.removeOverlays(self.mapView.overlays)
+        
         let marker0 = MKPlacemark(coordinate: cityCoordinateList[0])
         let marker1 = MKPlacemark(coordinate: cityCoordinateList[1])
         let marker2 = MKPlacemark(coordinate: cityCoordinateList[2])
