@@ -189,6 +189,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         findTheDistnceBetweenMarkers()
     }
     
+    //MARK: - method to find the distance between markers
     func findTheDistnceBetweenMarkers(){
         let marker0 = CLLocation(latitude: cityCoordinateList[0].latitude, longitude: cityCoordinateList[0].longitude)
         let marker1 = CLLocation(latitude: cityCoordinateList[1].latitude, longitude: cityCoordinateList[1].longitude)
@@ -198,9 +199,38 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let distanceInKm1 = String(format: "%.2f", (marker1.distance(from: marker2))/1000)
         let distanceInKm2 = String(format: "%.2f", (marker2.distance(from: marker0))/1000)
         
+        let marker02d = CLLocationCoordinate2D(latitude: cityCoordinateList[0].latitude, longitude: cityCoordinateList[0].longitude)
+        let marker12d = CLLocationCoordinate2D(latitude: cityCoordinateList[1].latitude, longitude: cityCoordinateList[1].longitude)
+        let marker22d = CLLocationCoordinate2D(latitude: cityCoordinateList[2].latitude, longitude: cityCoordinateList[2].longitude)
+        
+        showLabelForDistance(source: marker02d, destination: marker12d, distance: distanceInKm0)
+        showLabelForDistance(source: marker12d, destination: marker22d, distance: distanceInKm1)
+        showLabelForDistance(source: marker22d, destination: marker02d, distance: distanceInKm2)
+        
         print("distance0: \(distanceInKm0)")
         print("distance1: \(distanceInKm1)")
         print("distance2: \(distanceInKm2)")
+        
+    }
+    
+    // MARK: - method to show the label near polygon line
+    func showLabelForDistance(source: CLLocationCoordinate2D, destination: CLLocationCoordinate2D, distance: String){
+        let latDiff =  source.latitude - destination.latitude
+        let longDiff =  source.longitude - destination.longitude
+        let latMulti = latDiff/2
+        let longMulti = longDiff/2
+        let lat = source.latitude - latMulti
+        let long = source.longitude - longMulti
+        //let middle = CLLocationCoordinate2D(latitude: lat, longitude: long)
+        
+        let label = UILabel()
+        label.frame = CGRect(x: lat, y: long, width: 100, height: 20)
+        label.text = "\(distance) Km"
+        label.textColor = .black
+        view.addSubview(label)
+        //self.view = view
+        
+        //displayLocation(latitude: lat, longitude: long, title: "\(distance) Km", subtitle: "")
         
     }
 
