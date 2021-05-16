@@ -185,6 +185,23 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         print("drawing the Polygon")
         let polygon = MKPolygon(coordinates: cityCoordinateList, count: cityCoordinateList.count)
         mapView.addOverlay(polygon)
+        
+        findTheDistnceBetweenMarkers()
+    }
+    
+    func findTheDistnceBetweenMarkers(){
+        let marker0 = CLLocation(latitude: cityCoordinateList[0].latitude, longitude: cityCoordinateList[0].longitude)
+        let marker1 = CLLocation(latitude: cityCoordinateList[1].latitude, longitude: cityCoordinateList[1].longitude)
+        let marker2 = CLLocation(latitude: cityCoordinateList[2].latitude, longitude: cityCoordinateList[2].longitude)
+        
+        let distanceInKm0 = String(format: "%.2f", (marker0.distance(from: marker1))/1000)
+        let distanceInKm1 = String(format: "%.2f", (marker1.distance(from: marker2))/1000)
+        let distanceInKm2 = String(format: "%.2f", (marker2.distance(from: marker0))/1000)
+        
+        print("distance0: \(distanceInKm0)")
+        print("distance1: \(distanceInKm1)")
+        print("distance2: \(distanceInKm2)")
+        
     }
 
     //MARK: - method to draw the route between three markers
@@ -227,7 +244,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
            let rect = route.polyline.boundingMapRect
            self.mapView.setVisibleMapRect(rect, edgePadding: UIEdgeInsets(top: 100, left: 100, bottom: 100, right: 100), animated: true)
            
-           self.mapView.setRegion(MKCoordinateRegion(rect), animated: true)
+          // remving this line helps to set the region for all three markers
+          // self.mapView.setRegion(MKCoordinateRegion(rect), animated: true)
        }
     }
     
