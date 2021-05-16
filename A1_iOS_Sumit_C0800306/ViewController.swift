@@ -69,37 +69,37 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     if placemark.administrativeArea != nil && placemark.administrativeArea == "ON" {
                         
                         self.city = placemark.locality!
-                
+                        
+                        let distanceThreshold = 1000.0 // meters
+                        for i in 0..<self.annotationList.count {
+                            let distance = location.distance(from: CLLocation.init(latitude: self.annotationList[i].coordinate.latitude,
+                                                                                   longitude: self.annotationList[i].coordinate.longitude))
+                            if  distance < distanceThreshold
+                            {
+                                print("removing the annotation as distance is \(distance)")
+                                self.mapView.removeAnnotation(self.annotationList[i])
+                                self.mapView.removeOverlays(self.mapView.overlays)
+                                
+                                self.countList[i] = 0
+                                self.cityList[i] = ""
+                                self.cityCoordinateList[i] = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+                                self.markerCount -= 1
+                                self.annotationList[i] = MKPointAnnotation()
+                                
+                                self.btnDirection.isHidden = true
+                                
+                                print("Marker for \(self.markerCount)")
+                                print("Province: \(placemark.administrativeArea!)")
+                                print("City list: \(self.cityList)")
+                                print("Count list: \(self.countList)")
+                                //print("Annotation list: \(self.annotationList)")
+                                print("drawPolygon : \(self.drawPolygon)")
+                                
+                                return
+                            }
+                        }
                         // adding markers if number of marker is less than 4 else remove all 3 and adding new one
                         if(self.markerCount < 3){
-                            
-                            let distanceThreshold = 2000.0 // meters
-                            for i in 0..<self.annotationList.count {
-                                let distance = location.distance(from: CLLocation.init(latitude: self.annotationList[i].coordinate.latitude,
-                                                                                       longitude: self.annotationList[i].coordinate.longitude))
-                                if  distance < distanceThreshold
-                                {
-                                    print("removing the annotation as distance is \(distance)")
-                                    self.mapView.removeAnnotation(self.annotationList[i])
-                                    self.mapView.removeOverlays(self.mapView.overlays)
-                                    
-                                    self.countList[i] = 0
-                                    self.cityList[i] = ""
-                                    self.cityCoordinateList[i] = CLLocationCoordinate2D(latitude: 0, longitude: 0)
-                                    self.markerCount -= 1
-                                    self.annotationList[i] = MKPointAnnotation()
-                                    
-                                    print("Marker for \(self.markerCount)")
-                                    print("Province: \(placemark.administrativeArea!)")
-                                    print("City list: \(self.cityList)")
-                                    print("Count list: \(self.countList)")
-                                    //print("Annotation list: \(self.annotationList)")
-                                    print("drawPolygon : \(self.drawPolygon)")
-                                    
-                                    return
-                                }
-                            }
-                            
                             // if the same city is selected again then don't add marker
                             for i in 0..<self.cityList.count{
                                 if(self.cityList[i] == self.city){
@@ -144,11 +144,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                             self.countList = [1,0,0]
                             self.cityList = [self.city, "", ""]
                             self.cityCoordinateList = [coordinate, CLLocationCoordinate2D(latitude: 0, longitude: 0),CLLocationCoordinate2D(latitude: 0, longitude: 0)]
-                            
+        
                             let annotation = MKPointAnnotation()
                             annotation.coordinate = coordinate
                             annotation.title = "A"
-                            self.annotationList[0] = annotation
+                            self.annotationList = [annotation, MKPointAnnotation(), MKPointAnnotation()]
                             self.mapView.addAnnotation(annotation)
                             
                         }
