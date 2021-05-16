@@ -71,7 +71,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                         self.city = placemark.locality!
                 
                         // adding markers if number of marker is less than 4 else remove all 3 and adding new one
-                        if(self.markerCount < 4){
+                        if(self.markerCount < 3){
                             
                             let distanceThreshold = 2000.0 // meters
                             for i in 0..<self.annotationList.count {
@@ -81,6 +81,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                                 {
                                     print("removing the annotation as distance is \(distance)")
                                     self.mapView.removeAnnotation(self.annotationList[i])
+                                    self.mapView.removeOverlays(self.mapView.overlays)
                                     
                                     self.countList[i] = 0
                                     self.cityList[i] = ""
@@ -242,10 +243,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         userLocation = locations[0]
         
-       // let latitude = userLocation.coordinate.latitude
-       // let longitude = userLocation.coordinate.longitude
+       let latitude = userLocation.coordinate.latitude
+       let longitude = userLocation.coordinate.longitude
         
-        displayLocation(latitude: 43.65, longitude: -79.38, title: "Your location", subtitle: "you are here")
+        displayLocation(latitude: latitude, longitude: longitude, title: "Your location", subtitle: "you are here")
         
     }
     
