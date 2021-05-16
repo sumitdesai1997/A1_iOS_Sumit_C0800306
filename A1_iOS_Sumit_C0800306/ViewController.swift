@@ -20,6 +20,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var cityList = [String](repeating: "", count: 3)
     var countList = [Int](repeating: 0, count: 3)
     var cityCoordinateList = [CLLocationCoordinate2D](repeating: CLLocationCoordinate2D(latitude: 0, longitude: 0), count:3)
+    var annotationList = [MKPointAnnotation](repeating: MKPointAnnotation(), count:3)
     var drawPolygon = false
     var markerCount = 0
     
@@ -79,6 +80,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                         // adding markers if number of marker is less than 4 else remove all 3 and adding new one
                         if(self.markerCount < 4){
                             
+                            let distanceThreshold = 100.0 // meters
+                            for i in 0..<self.cityCoordinateList.count {
+                                if location.distance(from: CLLocation.init(latitude: self.cityCoordinateList[i].latitude,
+                                                                           longitude: self.cityCoordinateList[i].longitude)) < distanceThreshold
+                                {
+                                    
+                                }
+                            }
+                            
+                            
                             // adding annotation for the coordinates
                             let annotation = MKPointAnnotation()
                             annotation.coordinate = coordinate
@@ -89,16 +100,19 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                                 self.cityList[0] = self.city
                                 self.cityCoordinateList[0] = coordinate
                                 annotation.title = "A"
+                                self.annotationList[0] = annotation
                             } else if(self.countList[1] == 0){
                                 self.countList[1] = 1
                                 self.cityList[1] = self.city
                                 self.cityCoordinateList[1] = coordinate
                                 annotation.title = "B"
+                                self.annotationList[1] = annotation
                             } else if(self.countList[2] == 0){
                                 self.countList[2] = 1
                                 self.cityList[2] = self.city
                                 self.cityCoordinateList[2] = coordinate
                                 annotation.title = "C"
+                                self.annotationList[2] = annotation
                             }
                             self.mapView.addAnnotation(annotation)
                             
@@ -128,11 +142,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                             self.btnDirection.isHidden = false
                         }
                         
-                        print("Province: \(placemark.administrativeArea!)")
                         print("Marker for \(self.markerCount)")
+                        print("Province: \(placemark.administrativeArea!)")
                         print("City list: \(self.cityList)")
                         print("Count list: \(self.countList)")
+                        print("Annotation list: \(self.annotationList)")
                         print("drawPolygon : \(self.drawPolygon)")
+                        
                         
                         if(self.drawPolygon){
                            self.drawingPolygon()
