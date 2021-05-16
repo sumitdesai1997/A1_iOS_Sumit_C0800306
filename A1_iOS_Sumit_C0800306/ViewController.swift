@@ -116,6 +116,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                         self.drawPolygon = false
                         self.btnDirection.isHidden = true
                         if(self.countList[0] != 0 && self.countList[1] != 0 && self.countList[2] != 0){
+                            self.mapView.removeOverlays(self.mapView.overlays)
                             self.drawPolygon = true
                             self.btnDirection.isHidden = false
                         }
