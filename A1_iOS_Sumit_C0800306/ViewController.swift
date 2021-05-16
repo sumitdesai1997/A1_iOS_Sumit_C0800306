@@ -67,11 +67,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     // adding markers only if the cities are from ontario
                     if placemark.administrativeArea != nil && placemark.administrativeArea == "ON" {
                         self.markerCount += 1
-                        self.city = placemark.subLocality!
+                        self.city = placemark.locality!
                         
                         // if the same city is selected again then don't do anything
                         for i in 0..<self.cityList.count{
                             if(self.cityList[i] == self.city){
+                                print("City \(self.city) already there")
                                 return
                             }
                         }
