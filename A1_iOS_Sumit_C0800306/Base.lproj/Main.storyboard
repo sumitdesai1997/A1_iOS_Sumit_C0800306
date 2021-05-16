@@ -26,6 +26,9 @@
                                     <constraint firstAttribute="width" constant="100" id="XzB-Wq-Pda"/>
                                 </constraints>
                                 <state key="normal" title="Button" image="location-arrow"/>
+                                <connections>
+                                    <action selector="clickDirection:" destination="BYZ-38-t0r" eventType="touchUpInside" id="bdg-6g-KZX"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>

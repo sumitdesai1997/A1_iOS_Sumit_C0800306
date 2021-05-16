@@ -142,6 +142,39 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let polygon = MKPolygon(coordinates: cityCoordinateList, count: cityCoordinateList.count)
         mapView.addOverlay(polygon)
     }
+
+    //MARK: - method to draw the route between three markers
+    @IBAction func clickDirection(_ sender: UIButton) {
+        let marker0 = MKPlacemark(coordinate: cityCoordinateList[0])
+        let marker1 = MKPlacemark(coordinate: cityCoordinateList[1])
+        let marker2 = MKPlacemark(coordinate: cityCoordinateList[2])
+        
+        // requesting for the direction
+        let directionRequest = MKDirections.Request()
+        
+        // assigning the source and destination
+        directionRequest.source = MKMapItem(placemark: marker0)
+        directionRequest.destination = MKMapItem(placemark: marker1)
+        
+        // assiging the transport type
+        directionRequest.transportType = .automobile
+        
+        // calculating the direction
+        let directions = MKDirections(request: directionRequest)
+        directions.calculate { (response, error) in
+           guard let directionResponse = response else {return}
+           
+           let route = directionResponse.routes[0]
+           self.mapView.addOverlay(route.polyline, level: .aboveRoads)
+           
+           // defining the bounding map rectangle and then setting the visibility
+           let rect = route.polyline.boundingMapRect
+           self.mapView.setVisibleMapRect(rect, edgePadding: UIEdgeInsets(top: 100, left: 100, bottom: 100, right: 100), animated: true)
+           
+           self.mapView.setRegion(MKCoordinateRegion(rect), animated: true)
+       }
+    }
+    
     
     //MARK: - method didUpdateLocations from the CLLocationManagerDelegate
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
