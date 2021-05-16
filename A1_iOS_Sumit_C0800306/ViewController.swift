@@ -68,6 +68,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     if placemark.administrativeArea != nil && placemark.administrativeArea == "ON" {
                         self.markerCount += 1
                         self.city = placemark.subLocality!
+                        
+                        // if the same city is selected again then don't do anything
+                        for i in 0..<self.cityList.count{
+                            if(self.cityList[i] == self.city){
+                                return
+                            }
+                        }
                 
                         // adding markers if number of marker is less than 4 else remove all 3 and adding new one
                         if(self.markerCount < 4){
@@ -161,7 +168,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     // MARK: -  calculating the direction between 2 points on the map
-    func calculateDirection(source: MKPlacemark, destination: MKPlacemark){
+    func calculateDirection(source: MKPlacemark, destination: MKPlacemark) {
         // requesting for the direction
         let directionRequest = MKDirections.Request()
         
