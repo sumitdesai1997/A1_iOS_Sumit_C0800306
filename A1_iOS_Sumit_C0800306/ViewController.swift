@@ -66,56 +66,66 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     
                     // adding markers only if the cities are from ontario
                     if placemark.administrativeArea != nil && placemark.administrativeArea == "ON" {
-                        self.city = placemark.subAdministrativeArea!
                         self.markerCount += 1
-                        
-                        print("City: \(self.city)")
-                        print("Province: \(placemark.administrativeArea!)")
-                        
+                        self.city = placemark.subLocality!
+                
                         // adding markers if number of marker is less than 4 else remove all 3 and adding new one
                         if(self.markerCount < 4){
+                            
                             // adding annotation for the coordinates
                             let annotation = MKPointAnnotation()
                             annotation.coordinate = coordinate
-                            
-                            // addiing title for the annotations
+                                                      
+                            // updating arrays and giving annotation title as per the selection of marker
                             if(self.countList[0] == 0){
                                 self.countList[0] = 1
-                                annotation.title = "A"
+                                self.cityList[0] = self.city
                                 self.cityCoordinateList[0] = coordinate
+                                annotation.title = "A"
                             } else if(self.countList[1] == 0){
                                 self.countList[1] = 1
-                                annotation.title = "B"
+                                self.cityList[1] = self.city
                                 self.cityCoordinateList[1] = coordinate
+                                annotation.title = "B"
                             } else if(self.countList[2] == 0){
                                 self.countList[2] = 1
-                                annotation.title = "C"
+                                self.cityList[2] = self.city
                                 self.cityCoordinateList[2] = coordinate
+                                annotation.title = "C"
                             }
                             self.mapView.addAnnotation(annotation)
-                            print("Marker for \(self.markerCount)")
-                            
-                            // setting draw polygon flag true if three markers are there
-                            if(self.countList[0] != 0 && self.countList[1] != 0 && self.countList[2] != 0){
-                                self.drawPolygon = true
-                            }
-                            
-                            if(self.drawPolygon){
-                               self.drawingPolygon()
-                            }
                             
                         } else {
                             self.markerCount = 1
                             self.mapView.removeAnnotations(self.mapView.annotations)
                             self.mapView.removeOverlays(self.mapView.overlays)
+                            self.displayLocation(latitude: 43.65, longitude: -79.38, title: "Your location", subtitle: "you are here")
                             
                             self.countList = [1,0,0]
+                            self.cityList = [self.city, "", ""]
+                            self.cityCoordinateList = [coordinate, CLLocationCoordinate2D(latitude: 0, longitude: 0),CLLocationCoordinate2D(latitude: 0, longitude: 0)]
+                            
                             let annotation = MKPointAnnotation()
                             annotation.coordinate = coordinate
                             annotation.title = "A"
-                            self.cityCoordinateList[0] = coordinate
                             self.mapView.addAnnotation(annotation)
-                            print("Marker for \(self.markerCount)")
+                            
+                        }
+                        
+                        // setting draw polygon flag true if three markers are there
+                        self.drawPolygon = false
+                        if(self.countList[0] != 0 && self.countList[1] != 0 && self.countList[2] != 0){
+                            self.drawPolygon = true
+                        }
+                        
+                        print("Province: \(placemark.administrativeArea!)")
+                        print("Marker for \(self.markerCount)")
+                        print("City list: \(self.cityList)")
+                        print("Count list: \(self.countList)")
+                        print("drawPolygon : \(self.drawPolygon)")
+                        
+                        if(self.drawPolygon){
+                           self.drawingPolygon()
                         }
         
                     }
@@ -126,6 +136,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     //MARK: - method to draw polygon
     func drawingPolygon(){
+        print("drawing the Polygon")
         let polygon = MKPolygon(coordinates: cityCoordinateList, count: cityCoordinateList.count)
         mapView.addOverlay(polygon)
     }
@@ -137,7 +148,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
        // let latitude = userLocation.coordinate.latitude
        // let longitude = userLocation.coordinate.longitude
         
-        displayLocation(latitude: 43.65, longitude: -79.38, title: "Your location", subtitle: "your")
+        displayLocation(latitude: 43.65, longitude: -79.38, title: "Your location", subtitle: "you are here")
         
     }
     
