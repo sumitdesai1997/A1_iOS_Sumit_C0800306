@@ -152,12 +152,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let marker1 = MKPlacemark(coordinate: cityCoordinateList[1])
         let marker2 = MKPlacemark(coordinate: cityCoordinateList[2])
         
+        // calling the function that will calculate the direction between these markers
+        calculateDirection(source: marker0, destination: marker1)
+        calculateDirection(source: marker1, destination: marker2)
+        calculateDirection(source: marker2, destination: marker0)
+        
+    }
+    
+    // MARK: -  calculating the direction between 2 points on the map
+    func calculateDirection(source: MKPlacemark, destination: MKPlacemark){
         // requesting for the direction
         let directionRequest = MKDirections.Request()
         
         // assigning the source and destination
-        directionRequest.source = MKMapItem(placemark: marker0)
-        directionRequest.destination = MKMapItem(placemark: marker1)
+        directionRequest.source = MKMapItem(placemark: source)
+        directionRequest.destination = MKMapItem(placemark: destination)
         
         // assiging the transport type
         directionRequest.transportType = .automobile
