@@ -114,8 +114,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                         
                         // setting draw polygon flag true if three markers are there
                         self.drawPolygon = false
+                        self.btnDirection.isHidden = true
                         if(self.countList[0] != 0 && self.countList[1] != 0 && self.countList[2] != 0){
                             self.drawPolygon = true
+                            self.btnDirection.isHidden = false
                         }
                         
                         print("Province: \(placemark.administrativeArea!)")
