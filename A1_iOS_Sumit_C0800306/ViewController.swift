@@ -222,9 +222,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let marker2 = CLLocation(latitude: cityCoordinateList[2].latitude, longitude: cityCoordinateList[2].longitude)
         
         // stroing the value of distance between 2 markers
-        let distanceInKm0 = String(format: "%.2f", (marker0.distance(from: marker1))/1000)
-        let distanceInKm1 = String(format: "%.2f", (marker1.distance(from: marker2))/1000)
-        let distanceInKm2 = String(format: "%.2f", (marker2.distance(from: marker0))/1000)
+        let distanceInKm0 = "AB= " + String(format: "%.2f", (marker0.distance(from: marker1))/1000)
+        let distanceInKm1 = "BC= " + String(format: "%.2f", (marker1.distance(from: marker2))/1000)
+        let distanceInKm2 = "AC= " + String(format: "%.2f", (marker2.distance(from: marker0))/1000)
         
         // creating CLLocationCoordinate2D for all three markers
         let marker02d = CLLocationCoordinate2D(latitude: cityCoordinateList[0].latitude, longitude: cityCoordinateList[0].longitude)
