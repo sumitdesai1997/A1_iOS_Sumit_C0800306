@@ -87,6 +87,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                                 print("removing the annotation as distance is \(distance)")
                                 self.mapView.removeAnnotation(self.annotationList[i])
                                 self.mapView.removeOverlays(self.mapView.overlays)
+                                for v in self.view.subviews {
+                                    if v is UILabel {
+                                       v.removeFromSuperview()
+                                   }
+                                }
                                 
                                 self.countList[i] = 0
                                 self.cityList[i] = ""
@@ -149,6 +154,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                             self.markerCount = 1
                             self.mapView.removeAnnotations(self.mapView.annotations)
                             self.mapView.removeOverlays(self.mapView.overlays)
+                            for v in self.view.subviews {
+                                if v is UILabel {
+                                   v.removeFromSuperview()
+                               }
+                            }
                             self.displayLocation(latitude: 43.65, longitude: -79.38, title: "Your location", subtitle: "you are here")
                             
                             self.countList = [1,0,0]
@@ -168,6 +178,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                         self.btnDirection.isHidden = true
                         if(self.countList[0] != 0 && self.countList[1] != 0 && self.countList[2] != 0){
                             self.mapView.removeOverlays(self.mapView.overlays)
+                            for v in self.view.subviews {
+                                if v is UILabel {
+                                   v.removeFromSuperview()
+                               }
+                            }
                             self.drawPolygon = true
                             self.btnDirection.isHidden = false
                         }
@@ -195,7 +210,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let polygon = MKPolygon(coordinates: cityCoordinateList, count: cityCoordinateList.count)
         mapView.addOverlay(polygon)
         
-        //findTheDistnceBetweenMarkers()
+        findTheDistnceBetweenMarkers()
     }
     
     //MARK: - method to find the distance between markers
@@ -215,11 +230,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let marker02d = CLLocationCoordinate2D(latitude: cityCoordinateList[0].latitude, longitude: cityCoordinateList[0].longitude)
         let marker12d = CLLocationCoordinate2D(latitude: cityCoordinateList[1].latitude, longitude: cityCoordinateList[1].longitude)
         let marker22d = CLLocationCoordinate2D(latitude: cityCoordinateList[2].latitude, longitude: cityCoordinateList[2].longitude)
+
         
         // showing the label for distance
-        showLabelForDistance(source: marker02d, destination: marker12d, distance: distanceInKm0)
-        showLabelForDistance(source: marker12d, destination: marker22d, distance: distanceInKm1)
-        showLabelForDistance(source: marker22d, destination: marker02d, distance: distanceInKm2)
+        showLabelForDistance(source: marker02d, destination: marker12d, distance: distanceInKm0, tag: 0)
+        showLabelForDistance(source: marker12d, destination: marker22d, distance: distanceInKm1, tag: 1)
+        showLabelForDistance(source: marker22d, destination: marker02d, distance: distanceInKm2, tag: 2)
         
         print("distance0: \(distanceInKm0)")
         print("distance1: \(distanceInKm1)")
@@ -228,7 +244,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     // MARK: - method to show the label near polygon line
-    func showLabelForDistance(source: CLLocationCoordinate2D, destination: CLLocationCoordinate2D, distance: String){
+    func showLabelForDistance(source: CLLocationCoordinate2D, destination: CLLocationCoordinate2D, distance: String, tag: Int){
         // finding the mid point of polyline
         let latDiff =  source.latitude - destination.latitude
         let longDiff =  source.longitude - destination.longitude
@@ -238,6 +254,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let long = source.longitude - longMulti
         //let middle = CLLocationCoordinate2D(latitude: lat, longitude: long)
         
+        //let annotation = MKPointAnnotation()
+        //annotation.coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
+        //annotation.title = "Your Pin Title"
+        //mapView.addAnnotation(annotation)
+        
         // creating the label object to display the distance
         let label = UILabel()
         let coordinate = mapView.convert(CLLocationCoordinate2D(latitude: lat, longitude: long), toPointTo: label)
@@ -245,6 +266,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         label.text = "\(distance) Km"
         label.textColor = .black
         label.textAlignment = .center
+        label.tag = tag
         view.addSubview(label)
         
        // displayLocation(latitude: lat, longitude: long, title: "\(distance) Km", subtitle: "")
@@ -255,6 +277,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     @IBAction func clickDirection(_ sender: UIButton) {
         
         self.mapView.removeOverlays(self.mapView.overlays)
+        for v in self.view.subviews {
+            if v is UILabel {
+               v.removeFromSuperview()
+           }
+        }
         
         let marker0 = MKPlacemark(coordinate: cityCoordinateList[0])
         let marker1 = MKPlacemark(coordinate: cityCoordinateList[1])
