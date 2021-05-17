@@ -15,7 +15,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     // creating an object of location manager
     var locationManager = CLLocationManager()
+    
+    // variable for user location
     var userLocation = CLLocation()
+    
+    // variables to store the details on the user actions
     var city = ""
     var cityList = [String](repeating: "", count: 3)
     var countList = [Int](repeating: 0, count: 3)
@@ -28,11 +32,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
+        // hiding the button at the time of view did load
         btnDirection.isHidden = true
         
-        // assign the delegate of locationManager to this class
+        // assign the delegate of CLLocationManagerDelegate to this class
         locationManager.delegate = self
         
+        // assign the delegate of MKMapViewDelegate to this class
         mapView.delegate = self
         
         // assign the best accuracy of the location
@@ -44,7 +50,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         // updating the location of the user as per movement
         locationManager.startUpdatingLocation()
         
-        // long press gesture for adding the cities
+        // double tap gesture for adding the markers
         let lpGesture = UITapGestureRecognizer(target: self, action: #selector(addMarker))
         lpGesture.numberOfTapsRequired = 2
         mapView.addGestureRecognizer(lpGesture)
@@ -57,6 +63,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         
         let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
         
+        // method to find the province of location
         CLGeocoder().reverseGeocodeLocation(location) { (placemarks, error) in
             if(error != nil){
                 print(error!)
@@ -65,7 +72,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     
                     self.city = ""
                     
-                    // adding markers only if the cities are from ontario
+                    // adding markers only if cities are from ontario
                     if placemark.administrativeArea != nil && placemark.administrativeArea == "ON" {
                         
                         self.city = placemark.locality!
@@ -74,6 +81,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                         for i in 0..<self.annotationList.count {
                             let distance = location.distance(from: CLLocation.init(latitude: self.annotationList[i].coordinate.latitude,
                                                                                    longitude: self.annotationList[i].coordinate.longitude))
+                            // if user tap on the marker or near by marker then remove that particular marker
                             if  distance < distanceThreshold
                             {
                                 print("removing the annotation as distance is \(distance)")
@@ -92,15 +100,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                                 print("Province: \(placemark.administrativeArea!)")
                                 print("City list: \(self.cityList)")
                                 print("Count list: \(self.countList)")
-                                //print("Annotation list: \(self.annotationList)")
                                 print("drawPolygon : \(self.drawPolygon)")
                                 
                                 return
                             }
                         }
+                        
                         // adding markers if number of marker is less than 4 else remove all 3 and adding new one
                         if(self.markerCount < 3){
-                            // if the same city is selected again then don't add marker
+                            
+                            // if the same city is selected again then don't add the marker
                             for i in 0..<self.cityList.count{
                                 if(self.cityList[i] == self.city){
                                     print("City \(self.city) already there")
@@ -136,6 +145,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                             self.markerCount += 1
                             
                         } else {
+                            // if user tap is not near the exiting markers and also there's already three markers then remove them and add new marker
                             self.markerCount = 1
                             self.mapView.removeAnnotations(self.mapView.annotations)
                             self.mapView.removeOverlays(self.mapView.overlays)
@@ -166,10 +176,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                         print("Province: \(placemark.administrativeArea!)")
                         print("City list: \(self.cityList)")
                         print("Count list: \(self.countList)")
-                        //print("Annotation list: \(self.annotationList)")
                         print("drawPolygon : \(self.drawPolygon)")
                         
-                        
+                        // draw polygon if the drawPolygon flag is trye
                         if(self.drawPolygon){
                            self.drawingPolygon()
                         }
@@ -186,23 +195,28 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let polygon = MKPolygon(coordinates: cityCoordinateList, count: cityCoordinateList.count)
         mapView.addOverlay(polygon)
         
-        findTheDistnceBetweenMarkers()
+        //findTheDistnceBetweenMarkers()
     }
     
     //MARK: - method to find the distance between markers
     func findTheDistnceBetweenMarkers(){
+        
+        // createing location object for all three markers
         let marker0 = CLLocation(latitude: cityCoordinateList[0].latitude, longitude: cityCoordinateList[0].longitude)
         let marker1 = CLLocation(latitude: cityCoordinateList[1].latitude, longitude: cityCoordinateList[1].longitude)
         let marker2 = CLLocation(latitude: cityCoordinateList[2].latitude, longitude: cityCoordinateList[2].longitude)
         
+        // stroing the value of distance between 2 markers
         let distanceInKm0 = String(format: "%.2f", (marker0.distance(from: marker1))/1000)
         let distanceInKm1 = String(format: "%.2f", (marker1.distance(from: marker2))/1000)
         let distanceInKm2 = String(format: "%.2f", (marker2.distance(from: marker0))/1000)
         
+        // creating CLLocationCoordinate2D for all three markers
         let marker02d = CLLocationCoordinate2D(latitude: cityCoordinateList[0].latitude, longitude: cityCoordinateList[0].longitude)
         let marker12d = CLLocationCoordinate2D(latitude: cityCoordinateList[1].latitude, longitude: cityCoordinateList[1].longitude)
         let marker22d = CLLocationCoordinate2D(latitude: cityCoordinateList[2].latitude, longitude: cityCoordinateList[2].longitude)
         
+        // showing the label for distance
         showLabelForDistance(source: marker02d, destination: marker12d, distance: distanceInKm0)
         showLabelForDistance(source: marker12d, destination: marker22d, distance: distanceInKm1)
         showLabelForDistance(source: marker22d, destination: marker02d, distance: distanceInKm2)
@@ -215,6 +229,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     // MARK: - method to show the label near polygon line
     func showLabelForDistance(source: CLLocationCoordinate2D, destination: CLLocationCoordinate2D, distance: String){
+        // finding the mid point of polyline
         let latDiff =  source.latitude - destination.latitude
         let longDiff =  source.longitude - destination.longitude
         let latMulti = latDiff/2
@@ -223,6 +238,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let long = source.longitude - longMulti
         //let middle = CLLocationCoordinate2D(latitude: lat, longitude: long)
         
+        // creating the label object to display the distance
         let label = UILabel()
         let coordinate = mapView.convert(CLLocationCoordinate2D(latitude: lat, longitude: long), toPointTo: label)
         label.frame = CGRect(x: coordinate.x-100, y: coordinate.y-25, width: 200, height: 50)
@@ -275,7 +291,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
            let rect = route.polyline.boundingMapRect
            self.mapView.setVisibleMapRect(rect, edgePadding: UIEdgeInsets(top: 100, left: 100, bottom: 100, right: 100), animated: true)
            
-          // remving this line helps to set the region for all three markers
+          // removing this line helps to set the region for all three markers
           // self.mapView.setRegion(MKCoordinateRegion(rect), animated: true)
        }
     }
@@ -290,13 +306,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     //MARK: - method didUpdateLocations from the CLLocationManagerDelegate
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        userLocation = locations[0]
+      // current location of the user
+      userLocation = locations[0]
         
        let latitude = userLocation.coordinate.latitude
        let longitude = userLocation.coordinate.longitude
         
        displayLocation(latitude: latitude, longitude: longitude, title: "Your location", subtitle: "you are here")
-        
     }
     
     //MARK: - method to display the location on the map
@@ -327,6 +343,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
 
 }
 
+// providing extention of ViewController class
 extension ViewController: MKMapViewDelegate{
     
     //MARK: - method to renderer for overlay
