@@ -224,13 +224,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         //let middle = CLLocationCoordinate2D(latitude: lat, longitude: long)
         
         let label = UILabel()
-        label.frame = CGRect(x: lat, y: long, width: 100, height: 20)
+        let coordinate = mapView.convert(CLLocationCoordinate2D(latitude: lat, longitude: long), toPointTo: label)
+        label.frame = CGRect(x: coordinate.x-100, y: coordinate.y-25, width: 200, height: 50)
         label.text = "\(distance) Km"
         label.textColor = .black
+        label.textAlignment = .center
         view.addSubview(label)
-        //self.view = view
         
-        //displayLocation(latitude: lat, longitude: long, title: "\(distance) Km", subtitle: "")
+       // displayLocation(latitude: lat, longitude: long, title: "\(distance) Km", subtitle: "")
         
     }
 
@@ -294,7 +295,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
        let latitude = userLocation.coordinate.latitude
        let longitude = userLocation.coordinate.longitude
         
-        displayLocation(latitude: latitude, longitude: longitude, title: "Your location", subtitle: "you are here")
+       displayLocation(latitude: latitude, longitude: longitude, title: "Your location", subtitle: "you are here")
         
     }
     
@@ -316,11 +317,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         mapView.setRegion(region, animated: true)
         
         // 1.5 define annotation
-        let annotation = MKPointAnnotation()
-        annotation.title = title
-        annotation.subtitle = subtitle
-        annotation.coordinate = location
-        mapView.addAnnotation(annotation)
+       let annotation = MKPointAnnotation()
+       annotation.title = title
+       annotation.subtitle = subtitle
+       annotation.coordinate = location
+       mapView.addAnnotation(annotation)
         	
     }
 
