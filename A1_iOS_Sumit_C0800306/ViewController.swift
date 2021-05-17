@@ -210,6 +210,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let polygon = MKPolygon(coordinates: cityCoordinateList, count: cityCoordinateList.count)
         mapView.addOverlay(polygon)
         
+        // method call to display the distance between markers
         findTheDistnceBetweenMarkers()
     }
     
@@ -226,7 +227,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let distanceInKm1 = "BC= " + String(format: "%.2f", (marker1.distance(from: marker2))/1000)
         let distanceInKm2 = "AC= " + String(format: "%.2f", (marker2.distance(from: marker0))/1000)
         
-        // creating CLLocationCoordinate2D for all three markers
+        // creating CLLocationCoordinate2D for all three markers that will be used to find the midpoint of polygon line
         let marker02d = CLLocationCoordinate2D(latitude: cityCoordinateList[0].latitude, longitude: cityCoordinateList[0].longitude)
         let marker12d = CLLocationCoordinate2D(latitude: cityCoordinateList[1].latitude, longitude: cityCoordinateList[1].longitude)
         let marker22d = CLLocationCoordinate2D(latitude: cityCoordinateList[2].latitude, longitude: cityCoordinateList[2].longitude)
@@ -253,11 +254,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let lat = source.latitude - latMulti
         let long = source.longitude - longMulti
         //let middle = CLLocationCoordinate2D(latitude: lat, longitude: long)
-        
-        //let annotation = MKPointAnnotation()
-        //annotation.coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
-        //annotation.title = "Your Pin Title"
-        //mapView.addAnnotation(annotation)
         
         // creating the label object to display the distance
         let label = UILabel()
